@@ -3,8 +3,8 @@ services:
     name: django-app
     env: python
     buildCommand: "pip install -r requirements.txt && python manage.py collectstatic --noinput"
-    startCommand: "gunicorn oeallotment2.wsgi:application"
+    startCommand: "gunicorn oeallot.wsgi:application"
     plan: free
     envVars:
       - key: DJANGO_SETTINGS_MODULE
-        value: oeallotment2.settings
+        value: oeallot.settings
