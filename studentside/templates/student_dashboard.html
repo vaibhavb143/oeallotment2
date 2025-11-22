@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="card">
+  <div class="card-body">
+    <h3>Welcome, {{ student.user.first_name }}</h3>
+    <p><strong>Roll No:</strong> {{ student.roll_no }} &nbsp; <strong>Year:</strong> {{ student.year.name }}</p>
+
+    {% if student.allotted_subject %}
+      <div class="alert alert-success">Allotted Subject: <strong>{{ student.allotted_subject.name }}</strong></div>
+    {% else %}
+      <div class="alert alert-warning">You have not been allotted any subject yet.</div>
+      <a class="btn btn-primary" href="{% url 'select_preferences' %}">Select Preferences</a>
+    {% endif %}
+
+  </div>
+</div>
+{% endblock %}

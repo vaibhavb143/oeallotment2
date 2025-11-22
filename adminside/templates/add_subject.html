@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Add Subject - Admin{% endblock %}
+
+{% block content %}
+
+<style>
+  .form-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 28px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  }
+
+  .page-title {
+    font-weight: 700;
+    letter-spacing: .5px;
+    margin-bottom: 20px;
+  }
+
+  .btn-custom {
+    padding: 8px 18px !important;
+    border-radius: 8px !important;
+  }
+
+  .form-label {
+    font-weight: 600;
+  }
+</style>
+
+<div class="container py-3">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+
+      <div class="form-card">
+        <h3 class="page-title">➕ Add New Subject</h3>
+
+        <form method="post" class="row g-3">
+          {% csrf_token %}
+
+          <!-- Subject Name -->
+          <div class="col-12">
+            <label class="form-label">Subject Name</label>
+            <input class="form-control" type="text" name="name" placeholder="Enter subject name" required>
+          </div>
+
+          <!-- Year Dropdown -->
+          <div class="col-md-6">
+            <label class="form-label">Select Year</label>
+            <select class="form-select" name="year" required>
+              <option value="" selected disabled>Select year</option>
+              {% for y in years %}
+                <option value="{{ y.id }}">{{ y.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Total Seats -->
+          <div class="col-md-6">
+            <label class="form-label">Total Seats</label>
+            <input class="form-control" type="number" name="total_seats" min="0" placeholder="e.g. 60" required>
+          </div>
+
+          <!-- Buttons -->
+          <div class="col-12 mt-2">
+            <button class="btn btn-primary btn-custom" type="submit">
+              ✔ Add Subject
+            </button>
+
+            <a class="btn btn-secondary btn-custom ms-2" href="{% url 'admin_dashboard' %}">
+              ✖ Cancel
+            </a>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+{% endblock %}

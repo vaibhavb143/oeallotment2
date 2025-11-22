@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<style>
+  .dashboard-card {
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    padding: 20px;
+    background: #ffffff;
+  }
+
+  .table thead th {
+    background: #f7f7f7;
+    font-weight: 600;
+  }
+
+  .page-title {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+
+  .btn-custom {
+    border-radius: 8px;
+    padding: 6px 14px;
+  }
+</style>
+
+<div class="container py-3">
+  
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">Admin Dashboard</h2>
+
+    <div>
+      <a class="btn btn-success btn-custom me-2" href="{% url 'add_subject' %}">
+        ➕ Add Subject
+      </a>
+      <a class="btn btn-primary btn-custom" href="{% url 'admin_allotment_summary' %}">
+        📊 Allotment Summary
+      </a>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    
+    <!-- Left Section : Years -->
+    <div class="col-md-4">
+      <div class="dashboard-card">
+        <h5 class="mb-3">Academic Years</h5>
+        <ul class="list-group">
+          {% for y in years %}
+            <li class="list-group-item">{{ y.name }}</li>
+          {% empty %}
+            <li class="list-group-item text-muted">No years available</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Section : Subjects -->
+    <div class="col-md-8">
+      <div class="dashboard-card">
+        <h5 class="mb-3">Subjects Overview</h5>
+
+        <div class="table-responsive">
+          <table class="table table-bordered table-hover align-middle">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Subject Name</th>
+                <th>Year</th>
+                <th>Total Seats</th>
+                <th>Remaining</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for s in subjects %}
+                <tr>
+                  <td>{{ s.id }}</td>
+                  <td class="fw-semibold">{{ s.name }}</td>
+                  <td>{{ s.year.name }}</td>
+                  <td>{{ s.total_seats }}</td>
+                  <td class="{% if s.remaining_seats == 0 %}text-danger fw-bold{% endif %}">
+                    {{ s.remaining_seats }}
+                  </td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="5" class="text-center text-muted py-3">No subjects found.</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Allotment Summary{% endblock %}
+
+{% block content %}
+
+<style>
+  .summary-card {
+    background: #ffffff;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+  }
+
+  .page-title {
+    font-weight: 700;
+    letter-spacing: .5px;
+  }
+
+  .export-btn {
+    border-radius: 8px !important;
+    padding: 7px 14px !important;
+  }
+
+  .table thead th {
+    background: #f2f3f7 !important;
+    font-weight: 600;
+  }
+</style>
+
+<div class="container py-3">
+
+  <!-- Header -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title mb-0">Allotment Summary</h2>
+
+    <a href="?export=1" class="btn btn-outline-success export-btn">
+      📤 Export CSV
+    </a>
+  </div>
+
+  <!-- Summary Card -->
+  <div class="summary-card">
+
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover align-middle">
+        <thead>
+          <tr>
+            <th>Roll No</th>
+            <th>Student Name</th>
+            <th>Year</th>
+            <th>Allotted Subject</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for s in students %}
+          <tr>
+            <td>{{ s.roll_no }}</td>
+            <td class="fw-semibold">{{ s.user.get_full_name }}</td>
+            <td>{{ s.year.name }}</td>
+            <td>
+              {% if s.allotted_subject %}
+                <span class="badge bg-success px-3 py-2">
+                  {{ s.allotted_subject.name }}
+                </span>
+              {% else %}
+                <span class="text-muted fst-italic">Not Allotted</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% empty %}
+          <tr>
+            <td colspan="4" class="text-center text-muted py-3">
+              No students found.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- Back Button -->
+  <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mt-4">
+    ⬅ Back to Admin Panel
+  </a>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,584 @@
+{% extends "base.html" %}
+{% block title %}Student Registration{% endblock %}
+
+{% block content %}
+<style>
+  /* ===== RESET AND ISOLATE CONTENT ===== */
+  .registration-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 1;
+  }
+
+  /* Animated blobs in background */
+  .registration-wrapper::before,
+  .registration-wrapper::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.4;
+    z-index: 0;
+    animation: float 8s ease-in-out infinite;
+    pointer-events: none;
+  }
+
+  .registration-wrapper::before {
+    width: 400px;
+    height: 400px;
+    background: rgba(167, 139, 250, 0.6);
+    top: -100px;
+    left: -100px;
+    animation-delay: 0s;
+  }
+
+  .registration-wrapper::after {
+    width: 350px;
+    height: 350px;
+    background: rgba(251, 191, 36, 0.5);
+    bottom: -150px;
+    right: -100px;
+    animation-delay: 4s;
+  }
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(50px, -80px) scale(1.1);
+    }
+    66% {
+      transform: translate(-30px, 50px) scale(0.9);
+    }
+  }
+
+  /* ===== CONTENT CONTAINER ===== */
+  .registration-content {
+    position: relative;
+    z-index: 10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding: 40px 20px;
+    padding-top: 140px;
+  }
+
+  /* ===== STYLISH GLASS NAVBAR ===== */
+  .eas-navbar {
+    width: calc(100% - 40px);
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 20px 40px;
+    background: rgba(255, 255, 255, 0.12);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    animation: navSlideDown 0.8s ease-out;
+    border-radius: 25px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  /* LEFT BRAND */
+  .eas-brand {
+    font-size: 24px;
+    font-weight: 700;
+    color: #ffffff;
+    text-decoration: none;
+    letter-spacing: 1px;
+    position: relative;
+    transition: all 0.3s ease;
+    display: inline-block;
+  }
+
+  /* Brand Glow Animation */
+  .eas-brand:hover {
+    text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(168, 208, 255, 0.6);
+    transform: translateY(-2px);
+  }
+
+  /* RIGHT BUTTONS */
+  .eas-right {
+    display: flex;
+    gap: 15px;
+  }
+
+  .eas-right .eas-btn {
+    padding: 10px 20px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: inline-block;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .eas-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .eas-btn:hover::before {
+    left: 100%;
+  }
+
+  /* Hover animation */
+  .eas-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-3px);
+    box-shadow: 0 5px 25px rgba(255, 255, 255, 0.3);
+  }
+
+  /* Admin button highlight */
+  .eas-btn.admin {
+    background: rgba(239, 68, 68, 0.35);
+  }
+  .eas-btn.admin:hover {
+    background: rgba(239, 68, 68, 0.55);
+    box-shadow: 0 5px 25px rgba(239, 68, 68, 0.4);
+  }
+
+  /* NAV ANIMATION */
+  @keyframes navSlideDown {
+    from {
+      transform: translateX(-50%) translateY(-100px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* ===== GLASS CARD DESIGN ===== */
+  .register-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    border-radius: 30px;
+    padding: 45px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #fff;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    animation: cardSlideUp 0.8s ease-out;
+    position: relative;
+    overflow: hidden;
+    max-width: 500px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .register-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  @keyframes shimmer {
+    0% {
+      left: -100%;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  @keyframes cardSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+
+  /* ===== HEADINGS ===== */
+  .register-card h3 {
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeInDown 0.8s ease-out 0.3s backwards;
+    color: #fff;
+  }
+
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* ===== FORM GROUPS WITH STAGGER ANIMATION ===== */
+  .register-card .mb-3 {
+    animation: slideInLeft 0.6s ease-out backwards;
+  }
+
+  .register-card .mb-3:nth-child(2) { animation-delay: 0.4s; }
+  .register-card .mb-3:nth-child(3) { animation-delay: 0.5s; }
+  .register-card .mb-3:nth-child(4) { animation-delay: 0.6s; }
+  .register-card .mb-3:nth-child(5) { animation-delay: 0.7s; }
+  .register-card .mb-3:nth-child(6) { animation-delay: 0.8s; }
+
+  @keyframes slideInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  /* ===== FORM LABELS ===== */
+  .register-card .form-label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    color: #fff;
+  }
+
+  /* ===== INPUT FIELDS WITH ICONS ===== */
+  .register-card .mb-3 {
+    position: relative;
+  }
+
+  /* Add icons using CSS */
+  .register-card .mb-3:nth-child(2) .form-control,
+  .register-card .mb-3:nth-child(3) .form-control,
+  .register-card .mb-3:nth-child(4) .form-control,
+  .register-card .mb-3:nth-child(5) .form-control {
+    padding-left: 45px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    background-size: 20px;
+  }
+
+  /* User icon */
+  .register-card .mb-3:nth-child(2) .form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2'%3E%3C/path%3E%3Ccircle cx='12' cy='7' r='4'%3E%3C/circle%3E%3C/svg%3E");
+  }
+
+  /* Username icon */
+  .register-card .mb-3:nth-child(3) .form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'%3E%3C/circle%3E%3Ccircle cx='12' cy='10' r='3'%3E%3C/circle%3E%3Cpath d='M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  /* Lock icon */
+  .register-card .mb-3:nth-child(4) .form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='11' width='18' height='11' rx='2' ry='2'%3E%3C/rect%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  /* Hash icon */
+  .register-card .mb-3:nth-child(5) .form-control {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' y1='9' x2='20' y2='9'%3E%3C/line%3E%3Cline x1='4' y1='15' x2='20' y2='15'%3E%3C/line%3E%3Cline x1='10' y1='3' x2='8' y2='21'%3E%3C/line%3E%3Cline x1='16' y1='3' x2='14' y2='21'%3E%3C/line%3E%3C/svg%3E");
+  }
+
+  /* Calendar icon for select */
+  .register-card .mb-3:nth-child(6) .form-select {
+    padding-left: 45px;
+    background-image: 
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='16' y1='2' x2='16' y2='6'%3E%3C/line%3E%3Cline x1='8' y1='2' x2='8' y2='6'%3E%3C/line%3E%3Cline x1='3' y1='10' x2='21' y2='10'%3E%3C/line%3E%3C/svg%3E"),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-position: 15px center, calc(100% - 15px) center;
+    background-repeat: no-repeat;
+    background-size: 20px;
+    padding-right: 45px;
+  }
+
+  /* ===== INPUT FIELDS ===== */
+  .register-card .form-control,
+  .register-card .form-select {
+    background-color: rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 14px 15px;
+    color: #fff;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    font-size: 15px;
+    width: 100%;
+  }
+
+  .register-card .form-control::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .register-card .form-control:focus,
+  .register-card .form-select:focus {
+    background-color: rgba(255, 255, 255, 0.35);
+    border-color: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.15),
+                0 5px 20px rgba(255, 255, 255, 0.2);
+    color: #fff;
+    outline: none;
+    transform: translateY(-2px);
+  }
+
+  .register-card .form-select {
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .register-card .form-select option {
+    background: #667eea;
+    color: #fff;
+    padding: 10px;
+  }
+
+  /* ===== BUTTON ANIMATION ===== */
+  .register-card .d-grid {
+    animation: fadeInUp 0.6s ease-out 0.9s backwards;
+  }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .register-card .register-btn {
+    background: linear-gradient(135deg, #00f5d4 0%, #00d9c0 100%);
+    color: #1a1a2e;
+    font-weight: 700;
+    border-radius: 15px;
+    padding: 14px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    border: none;
+    width: 100%;
+    font-size: 16px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .register-card .register-btn::before {
+    content: "";
+    position: absolute;
+    left: -100%;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s ease;
+  }
+
+  .register-card .register-btn:hover::before {
+    left: 100%;
+  }
+
+  .register-card .register-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 245, 212, 0.5);
+  }
+
+  .register-card .register-btn:active {
+    transform: translateY(-1px);
+  }
+
+  /* ===== ALERT STYLING ===== */
+  .register-card .alert {
+    background: rgba(239, 68, 68, 0.25);
+    border: 1px solid rgba(239, 68, 68, 0.5);
+    border-radius: 15px;
+    padding: 12px;
+    margin-bottom: 20px;
+    animation: shake 0.5s ease-in-out;
+  }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+  }
+
+  /* ===== FOOTER TEXT ===== */
+  .register-card .text-center.mt-3 {
+    animation: fadeIn 0.6s ease-out 1s backwards;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .register-card .text-center.mt-3 a {
+    color: #00f5d4;
+    font-weight: 600;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .register-card .text-center.mt-3 a::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #00f5d4;
+    transition: width 0.3s ease;
+  }
+
+  .register-card .text-center.mt-3 a:hover::after {
+    width: 100%;
+  }
+
+  .register-card .text-center.mt-3 a:hover {
+    color: #00d9c0;
+    text-decoration: none;
+  }
+
+  /* ===== RESPONSIVE DESIGN ===== */
+  @media (max-width: 768px) {
+    .eas-navbar {
+      flex-direction: column;
+      gap: 15px;
+      padding: 20px;
+      width: calc(100% - 20px);
+      margin: 10px auto;
+    }
+
+    .eas-right {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .eas-btn {
+      padding: 8px 15px;
+      font-size: 14px;
+    }
+
+    .register-card {
+      padding: 30px 25px;
+    }
+
+    .registration-content {
+      padding: 20px 15px;
+      padding-top: 180px;
+    }
+
+    .register-card h3 {
+      font-size: 24px;
+    }
+  }
+</style>
+
+<div class="registration-wrapper">
+  <div class="registration-content">
+    <!-- NAVBAR -->
+    <nav class="eas-navbar">
+      <div class="eas-left">
+        <a href="{% url 'student_login' %}" class="eas-brand">Open Elective Allotment</a>
+      </div>
+
+      <div class="eas-right">
+        <a href="{% url 'student_login' %}" class="eas-btn">Student Login</a>
+        <a href="{% url 'student_register' %}" class="eas-btn">Register</a>
+        <a href="{% url 'admin_login' %}" class="eas-btn admin">Admin Login</a>
+      </div>
+    </nav>
+
+    <div class="register-card">
+      <h3 class="text-center mb-4">Student Registration</h3>
+
+      {% if error %}
+        <div class="alert alert-danger text-center">{{ error }}</div>
+      {% endif %}
+
+      <form method="post">
+        {% csrf_token %}
+
+        <div class="mb-3">
+          <label class="form-label">Full Name</label>
+          <input type="text" name="name" class="form-control" placeholder="Enter full name" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" placeholder="Choose username" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Roll Number</label>
+          <input type="text" name="roll_no" class="form-control" placeholder="Enter roll number" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Year</label>
+          <select name="year" class="form-select" required>
+            {% for y in years %}
+            <option value="{{ y.id }}">{{ y.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn register-btn">Register</button>
+        </div>
+      </form>
+
+      <p class="text-center mt-3">
+        Already have an account?
+        <a href="{% url 'student_login' %}">Login here</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,773 @@
+{% extends "base.html" %}
+{% block title %}Student Login{% endblock %}
+
+{% block content %}
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Inter", "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+}
+
+/* ==================== ANIMATED BACKGROUND ==================== */
+.animated-gradient {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
+  z-index: -2;
+}
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ==================== FLOATING BLOBS ==================== */
+.blob {
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.4;
+  z-index: -1;
+  animation: float 20s infinite ease-in-out;
+}
+
+.blob1 {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  left: -10%;
+  background: linear-gradient(45deg, #00f5ff, #0080ff);
+  animation-delay: 0s;
+}
+
+.blob2 {
+  width: 400px;
+  height: 400px;
+  top: 50%;
+  right: -10%;
+  background: linear-gradient(45deg, #ff00ff, #8000ff);
+  animation-delay: 7s;
+}
+
+.blob3 {
+  width: 600px;
+  height: 600px;
+  bottom: -15%;
+  left: 40%;
+  background: linear-gradient(45deg, #00ffff, #0066ff);
+  animation-delay: 3s;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+  33% { transform: translate(100px, -100px) scale(1.1) rotate(120deg); }
+  66% { transform: translate(-50px, 100px) scale(0.9) rotate(240deg); }
+}
+
+/* ==================== PARTICLES ==================== */
+.particles {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.particle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  animation: particleFloat 15s infinite ease-in-out;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes particleFloat {
+  0%, 100% { 
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { 
+    transform: translateY(-100vh) translateX(50px) scale(0);
+    opacity: 0;
+  }
+}
+
+/* ==================== GLASS NAVBAR ==================== */
+.glass-navbar {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 40px);
+  max-width: 1200px;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 20px;
+  transition: all 0.3s ease;
+}
+
+.brand-logo:hover {
+  transform: translateY(-2px);
+}
+
+.brand-logo svg {
+  animation: sparkle 2s infinite ease-in-out;
+}
+
+@keyframes sparkle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-btn {
+  position: relative;
+  padding: 10px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn-shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
+}
+
+.nav-btn:hover .btn-shine {
+  left: 100%;
+}
+
+/* ==================== LOGIN CONTAINER ==================== */
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 140px 20px 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.login-card-wrapper {
+  position: relative;
+  animation: cardEntrance 1s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes cardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(50px) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card-glow {
+  position: absolute;
+  inset: -2px;
+  background: linear-gradient(45deg, #667eea, #764ba2, #f093fb, #4facfe);
+  background-size: 300% 300%;
+  border-radius: 24px;
+  filter: blur(20px);
+  opacity: 0.5;
+  animation: glowPulse 4s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* ==================== LOGIN CARD ==================== */
+.login-card {
+  position: relative;
+  width: 100%;
+  max-width: 450px;
+  padding: 48px 40px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 24px;
+  box-shadow: 
+    0 20px 60px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  animation: cardFloat 6s ease-in-out infinite;
+}
+
+@keyframes cardFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Corner Decorations */
+.corner-decoration {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.corner-decoration.top-left {
+  top: 20px;
+  left: 20px;
+  border-right: none;
+  border-bottom: none;
+  border-radius: 8px 0 0 0;
+}
+
+.corner-decoration.top-right {
+  top: 20px;
+  right: 20px;
+  border-left: none;
+  border-bottom: none;
+  border-radius: 0 8px 0 0;
+}
+
+.corner-decoration.bottom-left {
+  bottom: 20px;
+  left: 20px;
+  border-right: none;
+  border-top: none;
+  border-radius: 0 0 0 8px;
+}
+
+.corner-decoration.bottom-right {
+  bottom: 20px;
+  right: 20px;
+  border-left: none;
+  border-top: none;
+  border-radius: 0 0 8px 0;
+}
+
+.login-card:hover .corner-decoration {
+  width: 50px;
+  height: 50px;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+/* ==================== CARD HEADER ==================== */
+.card-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.icon-circle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  color: white;
+  margin-bottom: 24px;
+  animation: iconPulse 3s ease-in-out infinite;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes iconPulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+  50% { transform: scale(1.05); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); }
+}
+
+.icon-circle svg {
+  width: 32px;
+  height: 32px;
+}
+
+.card-title {
+  color: white;
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.card-subtitle {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+/* ==================== ERROR ALERT ==================== */
+.error-alert {
+  padding: 14px 18px;
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 12px;
+  color: white;
+  margin-bottom: 24px;
+  animation: shake 0.5s ease-in-out;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  text-align: center;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+/* ==================== FORM ==================== */
+.login-form {
+  margin-bottom: 24px;
+}
+
+.input-group {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.input-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  width: 20px;
+  height: 20px;
+  color: rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.form-input {
+  width: 100%;
+  padding: 14px 16px 14px 48px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  color: white;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.form-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.form-input:focus {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.form-input:focus + .input-icon {
+  color: white;
+  transform: scale(1.1);
+}
+
+/* ==================== FORM OPTIONS ==================== */
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  font-size: 14px;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.9);
+  cursor: pointer;
+  user-select: none;
+}
+
+.remember-me input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #667eea;
+}
+
+.forgot-link {
+  color: rgba(255, 255, 255, 0.9);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.forgot-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: white;
+  transition: width 0.3s ease;
+}
+
+.forgot-link:hover {
+  color: white;
+}
+
+.forgot-link:hover::after {
+  width: 100%;
+}
+
+/* ==================== SUBMIT BUTTON ==================== */
+.submit-btn {
+  position: relative;
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+}
+
+.submit-btn:active {
+  transform: translateY(-1px);
+}
+
+.btn-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.submit-btn:hover .btn-gradient {
+  opacity: 1;
+}
+
+/* ==================== CARD FOOTER ==================== */
+.card-footer {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.card-footer p {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
+.register-link {
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.register-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #667eea, #764ba2);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.register-link:hover::after {
+  transform: scaleX(1);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 640px) {
+  .glass-navbar {
+    padding: 12px 20px;
+  }
+  
+  .brand-logo {
+    font-size: 16px;
+  }
+  
+  .nav-btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  
+  .login-card {
+    padding: 32px 24px;
+  }
+  
+  .card-title {
+    font-size: 26px;
+  }
+  
+  .icon-circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .icon-circle svg {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .form-options {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+}
+</style>
+
+<!-- Animated gradient background -->
+<div class="animated-gradient"></div>
+
+<!-- Floating gradient blobs -->
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+
+<!-- Floating particles -->
+<div class="particles">
+  <div class="particle" style="left: 10%; top: 20%; animation-delay: 0s;"></div>
+  <div class="particle" style="left: 20%; top: 80%; animation-delay: 2s;"></div>
+  <div class="particle" style="left: 30%; top: 50%; animation-delay: 4s;"></div>
+  <div class="particle" style="left: 40%; top: 10%; animation-delay: 6s;"></div>
+  <div class="particle" style="left: 50%; top: 70%; animation-delay: 1s;"></div>
+  <div class="particle" style="left: 60%; top: 30%; animation-delay: 3s;"></div>
+  <div class="particle" style="left: 70%; top: 60%; animation-delay: 5s;"></div>
+  <div class="particle" style="left: 80%; top: 40%; animation-delay: 7s;"></div>
+  <div class="particle" style="left: 90%; top: 15%; animation-delay: 8s;"></div>
+  <div class="particle" style="left: 15%; top: 45%; animation-delay: 9s;"></div>
+  <div class="particle" style="left: 25%; top: 65%; animation-delay: 10s;"></div>
+  <div class="particle" style="left: 35%; top: 85%; animation-delay: 11s;"></div>
+  <div class="particle" style="left: 45%; top: 25%; animation-delay: 12s;"></div>
+  <div class="particle" style="left: 55%; top: 55%; animation-delay: 13s;"></div>
+  <div class="particle" style="left: 65%; top: 75%; animation-delay: 14s;"></div>
+  <div class="particle" style="left: 75%; top: 5%; animation-delay: 1.5s;"></div>
+  <div class="particle" style="left: 85%; top: 90%; animation-delay: 2.5s;"></div>
+  <div class="particle" style="left: 5%; top: 35%; animation-delay: 3.5s;"></div>
+  <div class="particle" style="left: 95%; top: 50%; animation-delay: 4.5s;"></div>
+  <div class="particle" style="left: 50%; top: 95%; animation-delay: 5.5s;"></div>
+</div>
+
+<!-- Glass Navbar -->
+<nav class="glass-navbar">
+  <a href="{% url 'student_login' %}" class="brand-logo">
+    <!-- Sparkle Icon SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+      <path d="M5 3v4"/>
+      <path d="M19 17v4"/>
+      <path d="M3 5h4"/>
+      <path d="M17 19h4"/>
+    </svg>
+    <span>Elective Allotment</span>
+  </a>
+  <div class="nav-buttons">
+    <a href="{% url 'admin_login' %}" class="nav-btn">
+      <span>Admin Login</span>
+      <div class="btn-shine"></div>
+    </a>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="login-container">
+  <div class="login-card-wrapper">
+    <!-- Decorative glow -->
+    <div class="card-glow"></div>
+    
+    <div class="login-card">
+      <!-- Header with icon -->
+      <div class="card-header">
+        <div class="icon-circle">
+          <!-- User Icon SVG -->
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+        </div>
+        <h1 class="card-title">Welcome Back</h1>
+        <p class="card-subtitle">Sign in to access your account</p>
+      </div>
+
+      <!-- Error Alert -->
+      {% if error %}
+      <div class="error-alert">
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <!-- Login Form -->
+      <form method="post" class="login-form">
+        {% csrf_token %}
+
+        <!-- Username Input -->
+        <div class="input-group">
+          <label class="input-label">Username</label>
+          <div class="input-wrapper">
+            <!-- User Icon SVG -->
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
+            <input type="text" name="username" class="form-input" required>
+          </div>
+        </div>
+
+        <!-- Password Input -->
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <div class="input-wrapper">
+            <!-- Lock Icon SVG -->
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <input type="password" name="password" class="form-input" required>
+          </div>
+        </div>
+
+        <!-- Remember & Forgot -->
+        <div class="form-options">
+          <label class="remember-me">
+            <input type="checkbox" name="remember">
+            <span>Remember me</span>
+          </label>
+          <a href="#" class="forgot-link">Forgot password?</a>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="submit-btn">
+          <span class="btn-content">
+            <span>Sign In</span>
+            <!-- Login Icon SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" x2="3" y1="12" y2="12"/>
+            </svg>
+          </span>
+          <div class="btn-gradient"></div>
+        </button>
+      </form>
+
+      <!-- Footer -->
+      <div class="card-footer">
+        <p>
+          Don't have an account? 
+          <a href="{% url 'student_register' %}" class="register-link">Create one now</a>
+        </p>
+      </div>
+
+      <!-- Decorative corner elements -->
+      <div class="corner-decoration top-left"></div>
+      <div class="corner-decoration top-right"></div>
+      <div class="corner-decoration bottom-left"></div>
+      <div class="corner-decoration bottom-right"></div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
